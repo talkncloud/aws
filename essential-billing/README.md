@@ -17,4 +17,7 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
  * `cdk synth`       emits the synthesized CloudFormation template
 
  ## Usage
- cdk deploy --parameters email=demo@talkncloud.com --parameters spend=10
+ cdk deploy --parameters email=demo@example.com --parameters spend=10
+
+ ## Launch the stack in AWS using CF
+ [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=MyBudgetAlarm&templateURL=https://talkncloud-stax.s3-ap-southeast-2.amazonaws.com/EssentialBillingStack.template.json)
