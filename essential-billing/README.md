@@ -1,9 +1,11 @@
 # Welcome to talkncloud CDK TypeScript project!
 
-This project has been updated from the aws-cdk starter for the project.
+This example was written to help new comers setup billing alarms with AWS Budgets.
+
+More info: https://www.talkncloud.com/aws-essential-setting-budget-and-alarms/
 
 ## General
-Discuss it, change it, make it better, share it...
+Discuss it, change it, improve it, share it...
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -21,3 +23,5 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
  ## Launch the stack in AWS using CF
  [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=MyBudgetAlarm&templateURL=https://talkncloud-stax.s3-ap-southeast-2.amazonaws.com/EssentialBillingStack.template.json)
+
+
