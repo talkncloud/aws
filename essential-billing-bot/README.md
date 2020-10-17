@@ -1,8 +1,8 @@
 # Welcome to talkncloud CDK TypeScript project!
 
-This example was written to help new comers setup billing alarms with AWS Budgets and Bots!
+This example was written to help new comers setup billing alarms with AWS Budgets and Chatbot!
 
-More info: https://www.talkncloud.com/
+Detailed info: https://www.talkncloud.com/enter-the-bots-aws-budgets-with-bots/
 
 ## General
 Discuss it, change it, improve it, share it...
