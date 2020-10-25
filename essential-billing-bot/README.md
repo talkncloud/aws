@@ -4,8 +4,6 @@ This example was written to help new comers setup billing alarms with AWS Budget
 
 Detailed info: https://www.talkncloud.com/enter-the-bots-aws-budgets-with-bots/
 
-[design]: https://www.talkncloud.com/content/images/2020/10/tnc-appsync-waf-1.png
-
 ## General
 Discuss it, change it, improve it, share it...
 
