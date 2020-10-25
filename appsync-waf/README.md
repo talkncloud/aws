@@ -2,7 +2,7 @@
 
 This example was developed to provide a working demo of AppSync + WAF + Cognito + Dynamo!
 
-Detailed info: https://www.talkncloud.com/enter-the-bots-aws-budgets-with-bots/
+Detailed info: https://www.talkncloud.com/aws-appsync-with-waf-wooo-cdk-cf/
 
 ## General
 Discuss it, change it, improve it, share it...
