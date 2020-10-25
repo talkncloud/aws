@@ -4,7 +4,7 @@ This example was developed to provide a working demo of AppSync + WAF + Cognito 
 
 Detailed info: https://www.talkncloud.com/aws-appsync-with-waf-wooo-cdk-cf/
 
-[design]: https://www.talkncloud.com/content/images/2020/10/tnc-appsync-waf-1.png
+![design](https://www.talkncloud.com/content/images/2020/10/tnc-appsync-waf-1.png)
 
 ## General
 Discuss it, change it, improve it, share it...
