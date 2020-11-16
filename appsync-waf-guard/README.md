@@ -1,10 +1,10 @@
 # Welcome to talkncloud CDK TypeScript project!
 
-This example was developed to provide a working demo of AppSync + WAF + Cognito + Dynamo!
+This example was developed to provide a working run through of cloudformation guard (cfn-guard)!
 
-Detailed info: https://www.talkncloud.com/aws-appsync-with-waf-wooo-cdk-cf/
+**WAIT! This project is a clone of the original project, this is simply to demo cfn-guard and is NOT a working example for AppSync, please use original**
 
-![design](https://www.talkncloud.com/content/images/2020/10/tnc-appsync-waf-1.png)
+Detailed info: https://www.talkncloud.com/cloudformation-cfn-guard-policy-as-code/
 
 ## General
 Discuss it, change it, improve it, share it...
