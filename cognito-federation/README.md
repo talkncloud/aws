@@ -2,7 +2,7 @@
 
 This example was written to help new comers setup cognito with CDK.
 
-Detailed info: https://www.talkncloud.com/enter-the-bots-aws-budgets-with-bots/
+Detailed info: https://www.talkncloud.com/aws-cognito-the-good-the-bad-the-ugly/
 
 ## General
 Discuss it, change it, improve it, share it...
