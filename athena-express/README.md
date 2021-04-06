@@ -1,6 +1,6 @@
 # Simple example using athena-express with federated queries
 
-Detailed info: 
+Detailed info: https://www.talkncloud.com/athena-express-with-aws-with-fed/
 
 ## General
 Discuss it, change it, improve it, share it...
