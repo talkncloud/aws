@@ -18,7 +18,7 @@ const athenaExpressConfig = {
 const athenaExpress = new AthenaExpress(athenaExpressConfig);
 
 exports.handler = async (event, context, callback) => {
-	const sqlQuery = "SELECT count(*) from " + dynamoDb
+	const sqlQuery = 'SELECT count(*) from "' + dynamoDb + '"'
 
 	try {
 		let results = await athenaExpress.query(sqlQuery);

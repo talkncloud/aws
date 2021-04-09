@@ -167,7 +167,8 @@ export class AthenaAppsyncStack extends cdk.Stack {
                   "athena:GetQueryExecution",
                   "athena:GetQueryResults",
                   "athena:GetDataCatalog" ],
-      resources: ["arn:aws:athena:" + Stack.of(this).region + ":" + Stack.of(this).account + ":workgroup/tnc-wg" ] // couldn't seem to ref arn here?
+      resources: [ "arn:aws:athena:" + Stack.of(this).region + ":" + Stack.of(this).account + ":datacatalog/tnc-catalog",
+                    "arn:aws:athena:" + Stack.of(this).region + ":" + Stack.of(this).account + ":workgroup/tnc-wg" ] // couldn't seem to ref arn here?
     }));
 
     lambdaAthExpress.addToRolePolicy(new iam.PolicyStatement({
