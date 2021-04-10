@@ -23,6 +23,7 @@ exports.handler = async (event, context, callback) => {
 	try {
 		let results = await athenaExpress.query(sqlQuery);
 		callback(null, results);
+		console.log(results)
 	} catch (error) {
 		callback(error, null);
 	}

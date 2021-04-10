@@ -14,23 +14,6 @@ export class AthenaAppsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const apiSchema = fs.readFileSync('./lib/appsync/schema.graphql', 'utf-8');
-    
-    const appSyncApi = new appsync.CfnGraphQLApi(this, 'api', {
-      name: 'talkncloud',
-      authenticationType: appsync.AuthorizationType.API_KEY
-    });
-
-    const appSyncSchema = new appsync.CfnGraphQLSchema(this, 'tnc-schema', {
-      apiId: appSyncApi.attrApiId,
-      definition: apiSchema
-    });
-
-    // Database role for appsync
-    const dynamoRole = new iam.Role(this, 'tnc-dbRole', {
-      assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com')
-    });
-
     // Dynamo DB persistent datastore
     const dynamoTable = new dynamo.Table(this, 'tnc-db', {
       partitionKey: {
@@ -38,54 +21,6 @@ export class AthenaAppsyncStack extends cdk.Stack {
         type: AttributeType.STRING
       }
     });
-
-    // Update policy so appsync can use dynamo table
-    dynamoRole.addToPolicy(new iam.PolicyStatement({
-      resources: [ dynamoTable.tableArn ],
-      actions: [  'dynamodb:PutItem',
-                  'dynamodb:QueryItem',
-                  'dynamodb:GetItem',
-                  'dynamodb:Scan',
-                  'dynamodb:Query'
-      ]
-    }));
-    
-    // Define an AppSync datasource (dynamo)
-    const dynamoDataSource = new appsync.CfnDataSource(this, 'tnc-dynamodb', {
-      apiId: appSyncApi.attrApiId,
-      description: 'talkncloud dynamo datasource',
-      name: 'dynamodb',
-      dynamoDbConfig: {
-        tableName: dynamoTable.tableName,
-        awsRegion: this.region
-      },
-      type: 'AMAZON_DYNAMODB',
-      serviceRoleArn: dynamoRole.roleArn // This is what we configured above
-    });
-
-    const mutationCreateTodoReq = fs.readFileSync('./lib/appsync/Mutation.createTodo.req.vtl', 'utf-8');
-    const mutationCreateTodoRes = fs.readFileSync('./lib/appsync/Mutation.createTodo.res.vtl', 'utf-8');
-    const mutationCreateReqRes = new appsync.CfnResolver(this, 'mutationCreateTodoReqRes', {
-      apiId: appSyncApi.attrApiId,
-      typeName: 'Mutation',
-      fieldName: 'createTodo',
-      dataSourceName: dynamoDataSource.name,
-      requestMappingTemplate: mutationCreateTodoReq,
-      responseMappingTemplate: mutationCreateTodoRes
-    });
-    mutationCreateReqRes.addDependsOn(dynamoDataSource); // found that this was required at times
-
-    const queryTodoReq = fs.readFileSync('./lib/appsync/Query.getTodo.req.vtl', 'utf-8');
-    const queryTodoRes = fs.readFileSync('./lib/appsync/Query.getTodo.res.vtl', 'utf-8');
-    const queryReqRes = new appsync.CfnResolver(this, 'QueryTodoReqRes', {
-      apiId: appSyncApi.attrApiId,
-      typeName: 'Query',
-      fieldName: 'getTodo',
-      dataSourceName: dynamoDataSource.name,
-      requestMappingTemplate: queryTodoReq,
-      responseMappingTemplate: queryTodoRes
-    });
-    queryReqRes.addDependsOn(dynamoDataSource); // found that this was required at times
 
     // s3 bucket results from athena
     const athenaResultBucket = new s3.Bucket(this, 'bucket-ath-results', {
@@ -142,7 +77,8 @@ export class AthenaAppsyncStack extends cdk.Stack {
 
     // Lambda function for athena-express
     const lambdaAthExpress = new lambda.Function(this, "handler-athena", {
-      description: 'use athena to query federated sources',
+      functionName: "tnc-athena-handler",
+      description: "use athena to query federated sources",
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.asset("lib/lambda"),
       handler: "athena.handler",
@@ -181,6 +117,59 @@ export class AthenaAppsyncStack extends cdk.Stack {
       resources: [ "arn:aws:lambda:" + Stack.of(this).region + ":" + Stack.of(this).account + ":function:tnc-catalog" ]
     }));
 
+    // here
+
+    const apiSchema = fs.readFileSync('./lib/appsync/schema.graphql', 'utf-8');
+    
+    const appSyncApi = new appsync.CfnGraphQLApi(this, 'api', {
+      name: 'talkncloud',
+      authenticationType: appsync.AuthorizationType.API_KEY
+    });
+
+    var date = new Date(); // Now
+    date.setDate(date.getDate() + 30); // Set now + 30 days as the new date
+    const secondsSinceEpoch = Math.round(date.getTime() / 1000)
+    const appSyncApiKey = new appsync.CfnApiKey(this, 'appsync-key', {
+      apiId: appSyncApi.attrApiId,
+      description: "talkncloud temporary key for demo",
+      expires: secondsSinceEpoch
+    });
+
+    const appSyncSchema = new appsync.CfnGraphQLSchema(this, 'tnc-schema', {
+      apiId: appSyncApi.attrApiId,
+      definition: apiSchema
+    });
+
+    // Lambda role for appsync
+    const lambdaRole = new iam.Role(this, 'tnc-lambdaRole', {
+      assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com')
+    });
+
+    // Update policy so appsync can use lambda function
+    lambdaRole.addToPolicy(new iam.PolicyStatement({
+      resources: [ lambdaAthExpress.functionArn ],
+      actions: [ 'lambda:InvokeFunction' ]
+    }));
+
+    // Define an AppSync datasource (lambda)
+    const lambdaDataSource = new appsync.CfnDataSource(this, 'tnc-lambda-source', {
+      apiId: appSyncApi.attrApiId,
+      description: 'talkncloud lambda datasource',
+      name: 'lambda',
+      lambdaConfig: {
+        lambdaFunctionArn: lambdaAthExpress.functionArn
+      },
+      type: 'AWS_LAMBDA',
+      serviceRoleArn: lambdaRole.roleArn // This is what we configured above
+    });
+
+    const queryAthenaResolver = new appsync.CfnResolver(this, 'queryAthenaResolver', {
+      apiId: appSyncApi.attrApiId,
+      typeName: 'Query',
+      fieldName: 'getAthena',
+      dataSourceName: lambdaDataSource.name
+    });
+    queryAthenaResolver.addDependsOn(lambdaDataSource);
 
   }
 }
