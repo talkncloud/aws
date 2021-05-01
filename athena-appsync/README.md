@@ -1,10 +1,10 @@
 # Welcome to talkncloud CDK TypeScript project!
 
-This example was developed to provide an example of athena federated queries with appsync
+This example was developed to provide an example of athena federated queries with appsync, athena, dynamodb and quicksight. This provides an example on how to easily query dynamodb data and create dashboards.
 
-Detailed info: https://www.talkncloud.com/aws-appsync-with-waf-wooo-cdk-cf/
+Detailed info: https://www.talkncloud.com/it-truly-was-a/
 
-![design](https://www.talkncloud.com/content/images/2020/10/tnc-appsync-waf-1.png)
+![design](https://www.talkncloud.com/content/images/2021/05/tnc-presents-athena-appsync-1.gif)
 
 ## General
 Discuss it, change it, improve it, share it...
@@ -26,7 +26,5 @@ cdk deploy
 ## DynamoDB dummy data
 Use the following to load sample data or your own: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.02.html#GettingStarted.NodeJs.02.01
 
-## Launch the stack in AWS using CF
-[![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=TncAppSyncWaf&templateURL=https://talkncloud-stax.s3-ap-southeast-2.amazonaws.com/AppsyncWafStack.template.json)
 
 
