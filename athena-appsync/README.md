@@ -6,6 +6,11 @@ Detailed info: https://www.talkncloud.com/athena-dynamodb-quicksight-cdk/
 
 ![](design.jpeg)
 
+Example dashboard from this demo:
+![](dashboard.png)
+
+![](dashboard_2.png)
+
 ## General
 Discuss it, change it, improve it, share it...
 
