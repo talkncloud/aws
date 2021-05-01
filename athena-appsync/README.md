@@ -2,7 +2,7 @@
 
 This example was developed to provide an example of athena federated queries with appsync, athena, dynamodb and quicksight. This provides an example on how to easily query dynamodb data and create dashboards.
 
-Detailed info: https://www.talkncloud.com/it-truly-was-a/
+Detailed info: https://www.talkncloud.com/athena-dynamodb-quicksight-cdk/
 
 ![](design.jpeg)
 
