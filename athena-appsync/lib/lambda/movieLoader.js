@@ -33,7 +33,7 @@ console.log("Importing movies into DynamoDB. Please wait.");
 var allMovies = JSON.parse(fs.readFileSync('moviedata.json', 'utf8'));
 allMovies.forEach(function(movie) {
     var params = {
-        TableName: "AthenaAppsyncStack-tncdb38B2E622-1JU2UNVRSJA28",
+        TableName: "INSERT YOUR TABLE NAME HERE",
         Item: {
             "id": uuidv4(),
             "year":  movie.year,
