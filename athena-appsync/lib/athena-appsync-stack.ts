@@ -9,6 +9,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sam from '@aws-cdk/aws-sam';
 import * as athena from '@aws-cdk/aws-athena';
 import { Stack } from '@aws-cdk/core';
+import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 export class AthenaAppsyncStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -24,6 +25,12 @@ export class AthenaAppsyncStack extends cdk.Stack {
 
     // s3 bucket results from athena
     const athenaResultBucket = new s3.Bucket(this, 'bucket-ath-results', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
+    });
+
+    // s3 bucket results cache
+    const athenaCacheBucket = new s3.Bucket(this, 'bucket-ath-cache', {
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
     });
@@ -80,9 +87,11 @@ export class AthenaAppsyncStack extends cdk.Stack {
       functionName: "tnc-athena-handler",
       description: "use athena to query federated sources",
       runtime: lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.asset("lib/lambda"),
+      code: lambda.Code.asset("lib/lambda/athenaFederated"),
       handler: "athena.handler",
       environment: {
+        CACHE_BUCKET: athenaCacheBucket.bucketName,
+        CACHE_MINS: '3',
         ATH_BUCKET: athenaResultBucket.bucketName,
         ATH_CAT: athenaDataSource.name,
         ATH_WG: athenaWorkgroup.name,
@@ -95,6 +104,7 @@ export class AthenaAppsyncStack extends cdk.Stack {
     // Read/write for lambda to result bucket
     athenaResultBucket.grantReadWrite(lambdaAthExpress);
     athenaSpillBucket.grantReadWrite(lambdaAthExpress);
+    athenaCacheBucket.grantRead(lambdaAthExpress);
     
     lambdaAthExpress.addToRolePolicy(new iam.PolicyStatement({
       actions: [  "athena:GetWorkGroup",
@@ -117,8 +127,10 @@ export class AthenaAppsyncStack extends cdk.Stack {
       resources: [ "arn:aws:lambda:" + Stack.of(this).region + ":" + Stack.of(this).account + ":function:tnc-catalog" ]
     }));
 
-    // here
+    // athenaResultBucket.grantRead(lambdaAthCache);
+    athenaCacheBucket.grantReadWrite(lambdaAthExpress);
 
+    // AppSync GraphQL API
     const apiSchema = fs.readFileSync('./lib/appsync/schema.graphql', 'utf-8');
     
     const appSyncApi = new appsync.CfnGraphQLApi(this, 'api', {
