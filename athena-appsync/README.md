@@ -4,7 +4,7 @@ This example was developed to provide an example of athena federated queries wit
 
 Detailed info: https://www.talkncloud.com/it-truly-was-a/
 
-![design](https://www.talkncloud.com/content/images/2021/05/tnc-presents-athena-appsync-1.gif)
+![Alt Text](https://www.talkncloud.com/content/images/2021/05/tnc-presents-athena-appsync-1.gif)
 
 ## General
 Discuss it, change it, improve it, share it...
