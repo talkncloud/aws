@@ -36,4 +36,6 @@ tcup: https://github.com/talkncloud/tnc-cup-client - AWS cost estimation for clo
 
 RAW cost estimation can be found here: [cost estimate](AthenaAppsyncStack.tcup.txt)
 
+NOTE: QuickSight has not been provisioned in this demo via CDK, very few options for QuickSight, add ~$9.00 USD to this estimate
+
 ![](cost_estimate.png)
