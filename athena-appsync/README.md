@@ -35,3 +35,5 @@ Use the following to load sample data or your own: https://docs.aws.amazon.com/a
 tcup: https://github.com/talkncloud/tnc-cup-client - AWS cost estimation for cloudformation templates
 
 RAW cost estimation can be found here: [cost estimate](AthenaAppsyncStack.tcup.txt)
+
+![](cost_estimate.png)
