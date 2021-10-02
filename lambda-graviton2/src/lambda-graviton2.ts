@@ -1,5 +1,6 @@
 import * as apigw from "@aws-cdk/aws-apigateway";
 import * as lambda from "@aws-cdk/aws-lambda";
+import { DockerImageCode } from "@aws-cdk/aws-lambda";
 import * as cdk from "@aws-cdk/core";
 import { Construct, Stack, StackProps } from "@aws-cdk/core";
 
@@ -29,6 +30,32 @@ export class TalkncloudLambdaGravitonStack extends Stack {
       tracing: lambda.Tracing.ACTIVE,
     });
 
+    // Lamba container x86
+    const lambdaX86Container = new lambda.DockerImageFunction(
+      this,
+      "lambda-x86-container",
+      {
+        functionName: "talkncloud-lambda-container-x86",
+        description: "performance testing lambda to compare x86 to arm",
+        architectures: [lambda.Architecture.X86_64],
+        tracing: lambda.Tracing.ACTIVE,
+        code: DockerImageCode.fromImageAsset("./src/lambda/container/x86/"),
+      }
+    );
+
+    // Lamba container arm
+    const lambdaArmContainer = new lambda.DockerImageFunction(
+      this,
+      "lambda-arm-container",
+      {
+        functionName: "talkncloud-lambda-container-arm",
+        description: "performance testing lambda to compare x86 to arm",
+        architectures: [lambda.Architecture.ARM_64],
+        tracing: lambda.Tracing.ACTIVE,
+        code: DockerImageCode.fromImageAsset("./src/lambda/container/arm/"),
+      }
+    );
+
     // API GW
     const mainApi = new apigw.RestApi(this, "api", {
       restApiName: "talkncloud-lambda-graviton-api",
@@ -52,6 +79,20 @@ export class TalkncloudLambdaGravitonStack extends Stack {
     // API GW - arm method
     const arm = mainApi.root.addResource("arm");
     arm.addMethod("GET", new apigw.LambdaIntegration(lambdaArm));
+
+    // API GW - x86 container method
+    const x86container = mainApi.root.addResource("x86container");
+    x86container.addMethod(
+      "GET",
+      new apigw.LambdaIntegration(lambdaX86Container)
+    );
+
+    // API GW - x86 container method
+    const armcontainer = mainApi.root.addResource("armcontainer");
+    armcontainer.addMethod(
+      "GET",
+      new apigw.LambdaIntegration(lambdaArmContainer)
+    );
 
     // API GW - Api Key
     const apiKey = new apigw.ApiKey(this, "api-key", {
