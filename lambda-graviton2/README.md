@@ -8,7 +8,9 @@ Detailed info: https://www.talkncloud.com/lambda-graviton2-now-you-can-have-slow
 
 ## Usage
 yarn install
+
 projen
+
 projen deploy
 
 ## Grab your API-Key
