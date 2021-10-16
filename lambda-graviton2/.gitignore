@@ -30,6 +30,7 @@ jspm_packages/
 .cache
 .DS_Store
 perf.yaml
+report.*
 !/.projenrc.js
 /test-reports/
 junit.xml

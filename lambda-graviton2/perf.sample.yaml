@@ -1,0 +1,19 @@
+config:
+  target: "https://TALKNCLOUD.execute-api.ap-southeast-2.amazonaws.com/kaboom"
+  phases:
+    - duration: 900
+      arrivalRate: 30
+  defaults:
+    headers:
+      # x-api-key: "{{ $processEnvironment.SERVICE_API_KEY }}"
+      x-api-key: "SOMEKEYGENERATED"
+scenarios:
+  - flow:
+      - get:
+          url: "/x86"
+      - get:
+          url: "/arm"
+      - get:
+          url: "/x86container"
+      - get:
+          url: "/armcontainer"

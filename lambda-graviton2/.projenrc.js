@@ -24,7 +24,7 @@ const project = new AwsCdkTypeScriptApp({
     compilerOptions: { noUnusedLocals: false },
   },
   projectType: ProjectType.APP,
-  gitignore: [".DS_Store", "perf.yaml"],
+  gitignore: [".DS_Store", "perf.yaml", "report.*"],
   github: false,
 });
 project.synth();
