@@ -7,11 +7,9 @@ Detailed info: https://www.talkncloud.com/lambda-graviton2-now-you-can-have-slow
 ![](design.png)
 
 ## Usage
-yarn install
-
-projen
-
-projen deploy
+* yarn install
+* projen
+* projen deploy
 
 ## Grab your API-Key
 You'll need a key to hit the API-GW, one is created during provisioning. Grab the key on the console or use the AWS CLI:
