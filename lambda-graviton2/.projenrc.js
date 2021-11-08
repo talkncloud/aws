@@ -8,7 +8,7 @@ const project = new AwsCdkTypeScriptApp({
   eslintOptions: {
     prettier: true,
   },
-  cdkDependencies: ["@aws-cdk/aws-apigateway", "@aws-cdk/aws-lambda"],
+  cdkDependencies: ["@aws-cdk/aws-apigateway", "@aws-cdk/aws-lambda", "@aws-cdk/aws-s3"],
   authorEmail: "github@talkncloud.com",
   authorName: "mick jacobsson",
   description: "performance testing graviton2 lambda",

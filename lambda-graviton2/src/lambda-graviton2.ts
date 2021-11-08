@@ -1,6 +1,7 @@
 import * as apigw from "@aws-cdk/aws-apigateway";
 import * as lambda from "@aws-cdk/aws-lambda";
 import { DockerImageCode } from "@aws-cdk/aws-lambda";
+import * as s3 from "@aws-cdk/aws-s3";
 import * as cdk from "@aws-cdk/core";
 import { Construct, Stack, StackProps } from "@aws-cdk/core";
 
@@ -9,6 +10,7 @@ export class TalkncloudLambdaGravitonStack extends Stack {
     super(scope, id, props);
 
     // Lambda x86
+    // TODO: Python 3.9?
     const lambdaX86 = new lambda.Function(this, "lambda-x86", {
       functionName: "talkncloud-lambda-x86",
       description: "performance testing lambda to compare x86 to arm",
@@ -18,6 +20,37 @@ export class TalkncloudLambdaGravitonStack extends Stack {
       handler: "lambda.handler",
       tracing: lambda.Tracing.ACTIVE,
     });
+
+    // S3 Bucket Thumbnails
+    const bucketThumbnails = new s3.Bucket(this, "bucket-thumbnails", {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    });
+
+    // Lambda x86 - Thumbnail
+    // Randomly select 5 images from 100 (approx same size)
+    // Numpy maste? sort, filter for actuals, provide 5 (this is just extra not really needed)
+    // Generate thumbnail
+    // Save to /tmp - don't write back
+    const lambdaX86Thumbnail = new lambda.Function(this, "lambda-x86-thumbnail", {
+      functionName: "talkncloud-lambda-x86-thumbnail",
+      description: "performance testing lambda to compare x86 to arm - thumbnail resizer",
+      runtime: lambda.Runtime.PYTHON_3_8,
+      code: lambda.Code.fromAsset("./src/lambda/perf-thumbnail"),
+      handler: "lambda.handler",  
+      tracing: lambda.Tracing.ACTIVE,
+      environment: {
+        BUCKET: bucketThumbnails.bucketName,
+        NUMBER_OF_IMAGES: "5",
+        THUMBNAIL_WIDTH: "100",
+        THUMBNAIL_HEIGHT: "100",
+        THUMBNAIL_OUTPUT_DIR: "/tmp",
+      }
+    });
+
+    // Lambda x86 - Thumbnail - S3 read access
+    bucketThumbnails.grantRead(lambdaX86Thumbnail);
 
     // Lambda arm (graviton2)
     const lambdaArm = new lambda.Function(this, "lambda-arm", {
@@ -75,6 +108,10 @@ export class TalkncloudLambdaGravitonStack extends Stack {
     // API GW - x86 method
     const x86 = mainApi.root.addResource("x86");
     x86.addMethod("GET", new apigw.LambdaIntegration(lambdaX86));
+
+    // API GW - x86 thumbnail
+    const x86thumbnail = mainApi.root.addResource("x86thumbnail");
+    x86thumbnail.addMethod("GET", new apigw.LambdaIntegration(lambdaX86Thumbnail));
 
     // API GW - arm method
     const arm = mainApi.root.addResource("arm");
