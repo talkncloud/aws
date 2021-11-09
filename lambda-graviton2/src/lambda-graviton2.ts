@@ -37,7 +37,7 @@ export class TalkncloudLambdaGravitonStack extends Stack {
         description:
           "performance testing lambda to compare x86 to arm - thumbnail resizer",
         runtime: lambda.Runtime.PYTHON_3_8,
-        code: lambda.Code.fromAsset("./src/lambda/x86/perf-thumbnail"),
+        code: lambda.Code.fromAsset("./src/lambda/perf-thumbnail/x86"),
         handler: "lambda.handler",
         tracing: lambda.Tracing.ACTIVE,
         environment: {
@@ -64,7 +64,7 @@ export class TalkncloudLambdaGravitonStack extends Stack {
           "performance testing lambda to compare x86 to arm - thumbnail resizer",
         runtime: lambda.Runtime.PYTHON_3_8,
         architectures: [lambda.Architecture.ARM_64],
-        code: lambda.Code.fromAsset("./src/lambda/arm/perf-thumbnail"),
+        code: lambda.Code.fromAsset("./src/lambda/perf-thumbnail/arm"),
         handler: "lambda.handler",
         tracing: lambda.Tracing.ACTIVE,
         environment: {
