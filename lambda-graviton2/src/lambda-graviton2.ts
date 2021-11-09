@@ -25,32 +25,61 @@ export class TalkncloudLambdaGravitonStack extends Stack {
     const bucketThumbnails = new s3.Bucket(this, "bucket-thumbnails", {
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // Lambda x86 - Thumbnail
-    // Randomly select 5 images from 100 (approx same size)
-    // Numpy maste? sort, filter for actuals, provide 5 (this is just extra not really needed)
-    // Generate thumbnail
-    // Save to /tmp - don't write back
-    const lambdaX86Thumbnail = new lambda.Function(this, "lambda-x86-thumbnail", {
-      functionName: "talkncloud-lambda-x86-thumbnail",
-      description: "performance testing lambda to compare x86 to arm - thumbnail resizer",
-      runtime: lambda.Runtime.PYTHON_3_8,
-      code: lambda.Code.fromAsset("./src/lambda/perf-thumbnail"),
-      handler: "lambda.handler",  
-      tracing: lambda.Tracing.ACTIVE,
-      environment: {
-        BUCKET: bucketThumbnails.bucketName,
-        NUMBER_OF_IMAGES: "5",
-        THUMBNAIL_WIDTH: "100",
-        THUMBNAIL_HEIGHT: "100",
-        THUMBNAIL_OUTPUT_DIR: "/tmp",
+    const lambdaX86Thumbnail = new lambda.Function(
+      this,
+      "lambda-x86-thumbnail",
+      {
+        functionName: "talkncloud-lambda-x86-thumbnail",
+        description:
+          "performance testing lambda to compare x86 to arm - thumbnail resizer",
+        runtime: lambda.Runtime.PYTHON_3_8,
+        code: lambda.Code.fromAsset("./src/lambda/x86/perf-thumbnail"),
+        handler: "lambda.handler",
+        tracing: lambda.Tracing.ACTIVE,
+        environment: {
+          BUCKET: bucketThumbnails.bucketName,
+          NUMBER_OF_IMAGES: "5",
+          IMAGE_WIDTH: "100",
+          IMAGE_HEIGHT: "100",
+          IMAGE_OUTPUT_DIR: "/tmp",
+        },
+        timeout: cdk.Duration.seconds(15),
       }
-    });
+    );
 
     // Lambda x86 - Thumbnail - S3 read access
     bucketThumbnails.grantRead(lambdaX86Thumbnail);
+
+    // Lambda arm - Thumbnail
+    const lambdaArmThumbnail = new lambda.Function(
+      this,
+      "lambda-arm-thumbnail",
+      {
+        functionName: "talkncloud-lambda-arm-thumbnail",
+        description:
+          "performance testing lambda to compare x86 to arm - thumbnail resizer",
+        runtime: lambda.Runtime.PYTHON_3_8,
+        architectures: [lambda.Architecture.ARM_64],
+        code: lambda.Code.fromAsset("./src/lambda/arm/perf-thumbnail"),
+        handler: "lambda.handler",
+        tracing: lambda.Tracing.ACTIVE,
+        environment: {
+          BUCKET: bucketThumbnails.bucketName,
+          NUMBER_OF_IMAGES: "5",
+          IMAGE_WIDTH: "100",
+          IMAGE_HEIGHT: "100",
+          IMAGE_OUTPUT_DIR: "/tmp",
+        },
+        timeout: cdk.Duration.seconds(15),
+      }
+    );
+
+    // Lambda arm - Thumbnail - S3 read access
+    bucketThumbnails.grantRead(lambdaArmThumbnail);
 
     // Lambda arm (graviton2)
     const lambdaArm = new lambda.Function(this, "lambda-arm", {
@@ -111,7 +140,17 @@ export class TalkncloudLambdaGravitonStack extends Stack {
 
     // API GW - x86 thumbnail
     const x86thumbnail = mainApi.root.addResource("x86thumbnail");
-    x86thumbnail.addMethod("GET", new apigw.LambdaIntegration(lambdaX86Thumbnail));
+    x86thumbnail.addMethod(
+      "GET",
+      new apigw.LambdaIntegration(lambdaX86Thumbnail)
+    );
+
+    // API GW - x86 thumbnail
+    const armthumbnail = mainApi.root.addResource("armthumbnail");
+    armthumbnail.addMethod(
+      "GET",
+      new apigw.LambdaIntegration(lambdaArmThumbnail)
+    );
 
     // API GW - arm method
     const arm = mainApi.root.addResource("arm");
